@@ -1,9 +1,9 @@
 import { FastifyInstance } from "fastify";
 import { Pool } from "pg";
-import type { TransactionRaw } from "../engine/types.js";
-import { upsertRawTransaction } from "../models/transaction.raw.js";
-import { insertInterpretation } from "../models/transaction.interpretation.js";
-import { categorizeBatch } from "../engine/categorize.js";
+import type { TransactionRaw } from "../engine/types";
+import { upsertRawTransaction } from "../models/transaction.raw";
+import { insertInterpretation } from "../models/transaction.interpretation";
+import { categorizeBatch } from "../engine/categorize";
 
 /**
  * POST /import

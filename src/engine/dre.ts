@@ -1,4 +1,4 @@
-import type { LedgerEntry, DREReport, DRELineItem } from "./types.js";
+import type { LedgerEntry, DREReport, DRELineItem } from "./types";
 
 /**
  * Demonstração de Resultado do Exercício
@@ -96,4 +96,26 @@ function sumExpenseAccounts(accountTotals: Record<string, number>): number {
   return Object.entries(accountTotals)
     .filter(([account]) => account.startsWith("5"))
     .reduce((sum, [, amount]) => sum - amount, 0);
+}
+import type { Pool } from "pg";
+
+export async function computeDREFromDb(pool: Pool, period: string): Promise<DREReport> {
+  const { rows } = await pool.query<LedgerEntry>(`
+    SELECT
+      id,
+      date,
+      interpretation_id,
+      debit_account,
+      credit_account,
+      amount_in_cents,
+      description,
+      created_at,
+      is_internal_transfer
+    FROM ledger
+    WHERE date >= ($1 || '-01')::date
+      AND date <  (to_date($1 || '-01', 'YYYY-MM-DD') + interval '1 month')
+    ORDER BY date ASC, id ASC
+  `, [period]);
+
+  return calculateDRE(rows, period);
 }
