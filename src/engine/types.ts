@@ -11,6 +11,18 @@ export type TransactionRaw = {
   source: string;
   created_at: string; // ISO 8601
 };
+export type NewTransactionRaw = {
+  id: string;
+  date: string;
+  description: string;
+  amount_in_cents: number;
+  source: string;
+};
+export async function insertRawTransaction(
+  pool: Pool,
+  tx: NewTransactionRaw
+): Promise<TransactionRaw> {
+  
 
 export type TransactionInterpretation = {
   id: string;

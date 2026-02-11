@@ -1,8 +1,8 @@
 import Fastify from "fastify";
 import { Pool } from "pg";
-import { registerImportRoutes } from "./routes/import.js";
-import { registerDRERoutes } from "./routes/dre.js";
-import { registerCashFlowRoutes } from "./routes/cashflow.js";
+import { registerImportRoutes } from "./routes/import.ts";
+import { registerDRERoutes } from "./engine/dre.ts";
+import { registerCashFlowRoutes } from "./routes/cashflow.ts";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || "postgresql://localhost/financial",
