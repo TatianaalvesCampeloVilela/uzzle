@@ -1,10 +1,9 @@
 import type { FastifyInstance } from "fastify";
 import type { Pool } from "pg";
-import { computeDREFromDb } from "../engine/dre";
-
+import  { computeDREFromDb }  from "../engine/dre.js";
 
 // IMPORTA O CÁLCULO DO ENGINE
-import { computeDRE } from "../engine/dre";
+
 export async function registerDRERoutes(app: FastifyInstance, pool: Pool) {
   app.get("/dre", async (req, reply) => {
     const { period } = (req.query as { period?: string }) ?? {};
