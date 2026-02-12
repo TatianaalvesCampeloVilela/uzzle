@@ -1,11 +1,11 @@
 import { FastifyInstance } from "fastify";
 import { Pool } from "pg";
 import { z } from "zod";
-import type { TransactionRaw } from "../engine/types";
-import { upsertRawTransaction } from "../models/transaction.raw";
-import { insertInterpretation } from "../models/transaction.interpretation";
-import { categorizeBatch } from "../engine/categorize";
-import { validateImportBody } from "../lib/validate";
+import type { TransactionRaw } from "../engine/types.js";
+import { upsertRawTransaction } from "../models/transaction.raw.js";
+import { insertInterpretation } from "../models/transaction.interpretation.js";
+import { categorizeBatch } from "../engine/categorize.js";
+import { validateImportBody } from "../lib/validate.js";
 
 export async function registerImportRoutes(app: FastifyInstance, pool: Pool) {
   app.post("/import", async (request, reply) => {
@@ -32,7 +32,7 @@ export async function registerImportRoutes(app: FastifyInstance, pool: Pool) {
     }
 
     const categories = categorizeBatch(transactions);
-
+    
     for (const category of categories) {
       const existing = await pool.query(
         "SELECT 1 FROM transaction_interpretation WHERE raw_id = $1 LIMIT 1",
