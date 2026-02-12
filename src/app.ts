@@ -1,6 +1,6 @@
 import Fastify from "fastify";
 import { Pool } from "pg";
-import { registerImportRoutes } from "./routes/import.ts";
+import { registerImportRoutes } from "./routes/import";
 import { registerDRERoutes } from "./engine/dre.ts";
 import { registerCashFlowRoutes } from "./routes/cashflow.ts";
 
