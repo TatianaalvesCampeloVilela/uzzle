@@ -5,15 +5,12 @@ import { calculateCashFlow } from "../engine/cashflow.js";
 /**
  * GET /cashflow/:period
  * Retorna fluxo de caixa para um período (YYYY-MM)
- * 
+ *
  * Query params:
  *   ?opening_balance=100000 (em centavos)
  */
 
-export async function registerCashFlowRoutes(
-  app: FastifyInstance,
-  pool: Pool
-) {
+export async function registerCashFlowRoutes(app: FastifyInstance, pool: Pool) {
   app.get<{
     Params: { period: string };
     Querystring: { opening_balance?: string };
@@ -25,9 +22,19 @@ export async function registerCashFlowRoutes(
       return reply.code(400).send({ error: "period must be YYYY-MM" });
     }
 
+    const [yearStr, monthStr] = period.split("-");
+    const year = Number(yearStr);
+    const month = Number(monthStr);
+
+    const nextYear = month === 12 ? year + 1 : year;
+    const nextMonth = month === 12 ? 1 : month + 1;
+
+    const start = `${yearStr}-${monthStr}-01`;
+    const endExclusive = `${String(nextYear)}-${String(nextMonth).padStart(2, "0")}-01`;
+
     const ledgerResult = await pool.query(
       `SELECT * FROM ledger WHERE date >= $1 AND date < $2 ORDER BY date ASC`,
-      [`${period}-01`, `${period.slice(0, 7)}-32`]
+      [start, endExclusive]
     );
 
     const cashflow = calculateCashFlow(ledgerResult.rows, period, openingBalance);

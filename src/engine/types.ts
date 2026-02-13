@@ -65,7 +65,3 @@ export type CashFlowReport = {
   closing_balance_in_cents: number;
   generated_at: string;
 };
-export async function insertRawTransaction(
-  pool: Pool,
-  tx: NewTransactionRaw
-): Promise<TransactionRaw>

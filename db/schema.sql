@@ -6,12 +6,15 @@ CREATE TABLE IF NOT EXISTS transaction_raw (
   amount_in_cents BIGINT NOT NULL,
   source VARCHAR(100) NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  
+
   CHECK (amount_in_cents != 0)
 );
 
-CREATE INDEX idx_transaction_raw_date ON transaction_raw(date);
-CREATE INDEX idx_transaction_raw_source ON transaction_raw(source);
+CREATE INDEX IF NOT EXISTS idx_transaction_raw_date
+  ON transaction_raw(date);
+
+CREATE INDEX IF NOT EXISTS idx_transaction_raw_source
+  ON transaction_raw(source);
 
 -- TransactionInterpretation: VERSIONADA
 CREATE TABLE IF NOT EXISTS transaction_interpretation (
@@ -23,15 +26,18 @@ CREATE TABLE IF NOT EXISTS transaction_interpretation (
   method VARCHAR(20) NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   version INT NOT NULL,
-  
+
   FOREIGN KEY (raw_id) REFERENCES transaction_raw(id),
   UNIQUE (raw_id, version),
   CHECK (confidence >= 0 AND confidence <= 1),
   CHECK (method IN ('rule', 'model', 'manual'))
 );
 
-CREATE INDEX idx_transaction_interpretation_raw_id ON transaction_interpretation(raw_id);
-CREATE INDEX idx_transaction_interpretation_version ON transaction_interpretation(raw_id, version DESC);
+CREATE INDEX IF NOT EXISTS idx_transaction_interpretation_raw_id
+  ON transaction_interpretation(raw_id);
+
+CREATE INDEX IF NOT EXISTS idx_transaction_interpretation_version
+  ON transaction_interpretation(raw_id, version DESC);
 
 -- LEDGER: IMUTÁVEL, FONTE DE VERDADE
 CREATE TABLE IF NOT EXISTS ledger (
@@ -44,14 +50,19 @@ CREATE TABLE IF NOT EXISTS ledger (
   description TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   is_internal_transfer BOOLEAN NOT NULL DEFAULT FALSE,
-  
+
   FOREIGN KEY (interpretation_id) REFERENCES transaction_interpretation(id),
   CHECK (amount_in_cents > 0)
 );
 
-CREATE INDEX idx_ledger_date ON ledger(date);
-CREATE INDEX idx_ledger_interpretation_id ON ledger(interpretation_id);
-CREATE INDEX idx_ledger_is_internal_transfer ON ledger(is_internal_transfer);
+CREATE INDEX IF NOT EXISTS idx_ledger_date
+  ON ledger(date);
+
+CREATE INDEX IF NOT EXISTS idx_ledger_interpretation_id
+  ON ledger(interpretation_id);
+
+CREATE INDEX IF NOT EXISTS idx_ledger_is_internal_transfer
+  ON ledger(is_internal_transfer);
 
 -- Soma de débitos e créditos sempre deve ser zero (integridade contábil)
 CREATE TABLE IF NOT EXISTS ledger_integrity_check (
