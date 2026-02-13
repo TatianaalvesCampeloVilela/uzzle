@@ -1,4 +1,4 @@
-import type { LedgerEntry, DREReport, DRELineItem } from "./types";
+import type { LedgerEntry, DREReport, DRELineItem } from "./types.js";
 
 /**
  * Demonstração de Resultado do Exercício
@@ -95,7 +95,7 @@ function sumRevenueAccounts(accountTotals: Record<string, number>): number {
 function sumExpenseAccounts(accountTotals: Record<string, number>): number {
   return Object.entries(accountTotals)
     .filter(([account]) => account.startsWith("5"))
-    .reduce((sum, [, amount]) => sum - amount, 0);
+    .reduce((sum, [, amount]) => sum + amount, 0);
 }
 import type { Pool } from "pg";
 

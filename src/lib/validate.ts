@@ -4,7 +4,9 @@ export const TransactionSchema = z.object({
   id: z.string().min(1).max(255),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   description: z.string().min(1).max(500),
-  amount_in_cents: z.number().int(),
+  amount_in_cents: z.number().int().refine(val => val !== 0, {
+    message: "amount_in_cents cannot be zero"
+  }),
   source: z.string().min(1),
 });
 

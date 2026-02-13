@@ -4,6 +4,7 @@ import type { TransactionRaw, TransactionInterpretation } from "./types.js";
  * Categorização por regras determinísticas.
  * IA é opcional e nunca muda números.
  */
+type TransactionInput = TransactionRaw | Omit<TransactionRaw, "created_at">;
 
 const CATEGORIZATION_RULES: Array<{
   pattern: RegExp;
@@ -38,13 +39,13 @@ const CATEGORIZATION_RULES: Array<{
 ];
 
 export function categorizeBatch(
-  transactions: TransactionRaw[]
+  transactions: TransactionInput[]  // ← USAR O TYPE HELPER
 ): TransactionInterpretation[] {
   return transactions.map((tx) => categorizeOne(tx));
 }
 
 export function categorizeOne(
-  tx: TransactionRaw
+  tx: TransactionInput  // ← USAR O TYPE HELPER
 ): TransactionInterpretation {
   const matchedRule = CATEGORIZATION_RULES.find((rule) =>
     rule.pattern.test(tx.description)
@@ -63,7 +64,6 @@ export function categorizeOne(
     };
   }
 
-  // Default: necessita classificação manual
   return {
     id: `interp_${tx.id}_v1`,
     raw_id: tx.id,

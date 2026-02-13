@@ -1,10 +1,12 @@
 import type { LedgerEntry, CashFlowReport } from "./types.js";
+import type { Pool } from "pg";
 
 /**
  * Fluxo de Caixa
  * Apenas transações que movem caixa (contas 1.x - Banco)
  */
 
+// ✅ FUNÇÃO PURA - SEM acesso ao banco
 export function calculateCashFlow(
   ledgerEntries: LedgerEntry[],
   period: string,
@@ -38,4 +40,21 @@ export function calculateCashFlow(
     closing_balance_in_cents: closingBalance,
     generated_at: new Date().toISOString(),
   };
+}
+
+// ✅ FUNÇÃO QUE ACESSA O BANCO - Busca dados e chama a função pura
+export async function computeCashFlowFromDb(
+  pool: Pool,
+  period: string,
+  openingBalance: number
+): Promise<CashFlowReport> {
+  const { rows } = await pool.query<LedgerEntry>(
+    `SELECT * FROM ledger 
+     WHERE date >= $1::date 
+       AND date < ($1::date + interval '1 month')
+     ORDER BY date ASC`,
+    [`${period}-01`]
+  );
+
+  return calculateCashFlow(rows, period, openingBalance);
 }
